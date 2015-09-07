@@ -33,7 +33,7 @@ if sys.argv[1]:
 	elif sys.argv[1]=='run':
 		runserver_command()
 	elif sys.argv[1]=='version':
-		print "0.2.0"
+		print "0.2.2"
 	else:
 		print "Incorrect command line arguements submitted."
 else:
