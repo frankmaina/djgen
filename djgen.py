@@ -41,6 +41,8 @@ else:
 	print "Would you like to generate a new app?(Y/N)"
 	next_command = raw_input()
 	if next_command=='y':
-		generate_project()
+		print "Please enter the app name:"
+		app_name = raw_input()
+		generate_project(app_name)
 	elif next_command=='n':
 		print "thanks!"
