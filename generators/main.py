@@ -13,7 +13,7 @@ def generate_template(app_name,file_name):
     directory = './'+app_name+'/'+'templates/'+app_name
     if not os.path.exists(directory):
         os.makedirs(directory)
-    html = open('./generators/resources/index.html')
+    html = open('./generators/resources/'+app_name+'/index.html')
     value= html.read()
     template_path = directory+'/'+file_name
     file_write(template_path,value)      
