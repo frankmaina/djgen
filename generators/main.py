@@ -13,9 +13,9 @@ def generate_template(app_name,file_name):
     directory = './'+app_name+'/'+'templates/'+app_name
     if not os.path.exists(directory):
         os.makedirs(directory)
-    html = open('./generators/resources/'+app_name+'/index.html')
+    html = open(os.path.abspath('generators/resources/index.html'))
     value= html.read()
-    template_path = directory+'/'+file_name
+    template_path = directory+'/'+file_name+'.html'
     file_write(template_path,value)      
     return template_path
 
@@ -30,7 +30,7 @@ def generate_app(name):
 
 
 def generate_view(app_name,view_name):
-    view_template = view_name+'.html'
+    view_template = view_name
     template_path = generate_template(app_name,view_template)
     #now we append to the view file
     view_code = "\n\ndef "+view_name+"(request):\n\treturn render(request, \'"+template_path+"\')\n"

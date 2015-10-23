@@ -3,54 +3,66 @@ import sys
 from system.calls import *
 from generators.main import *
 from system.commands import *
+import logging
+
+#some basic configs
+logging.basicConfig(filename='djgen.log',level=logging.DEBUG)
+app_version = "0.3.0"
+
+
+
+#we initiate options that are available through the command line
+import argparse
+parser = argparse.ArgumentParser()
+group = parser.add_mutually_exclusive_group()
+parser.add_argument("--new", help="Start a new Django Project.",
+                    type=str)
+parser.add_argument("--app", help="Create a new Django App.",
+                    type=str)
+parser.add_argument("--view", help="Generate an app View.",
+                    type=str)
+parser.add_argument("--template", help="Generate a Template to a specific app.",
+                    type=str)
+parser.add_argument("--urls", help="Generate an app urls.py file.",
+                    type=str)
+group.add_argument("--version","-v", help="App version.",action='store_true')
+args = parser.parse_args()
+
+
+
 # first check if we are in a django app. this is a quick fix though
-
 def check_folder():
-	try:
-		os.path.isfile('./manage.py')
-	except Exception as e:
-		print "this is not a django folder: "
-		print e
+	if not os.path.isfile('./manage.py'):
+		logging.debug("\nAttempted action on a non-django direcotry.\n")
+		sys.exit("This is not a django folder!")
 
+
+
+# then process the arguements passed
 try:
-	if sys.argv[1]=='new':
-		if sys.argv[2]=='project':
-			generate_project(sys.argv[3])
-		elif sys.argv[2]=='app':
-			check_folder()
-			generate_app(sys.argv[3])
-			print "The app "+sys.argv[3]+" has been generated."
-		elif sys.argv[2]=='view':
-			check_folder()
-			generate_view(sys.argv[3],sys.argv[4])
-			print "The view has been generated."
-		elif sys.argv[2]=='template':
-			check_folder()
-			generate_template(sys.argv[3],sys.argv[4])
-			print "The template file has been generated."
-		elif sys.argv[2]=='urls':
-			check_folder()
-			generate_urls_py(sys.argv[3])
-			print "The urls.py file has been generated."
-		else:
-			print "An error occurred parsing command line arguements."
-	elif sys.argv[1]=='run':
-		runserver_command()
-	elif sys.argv[1]=='version':
-		print "0.2.6"
+	if args.new:
+		generate_project(args.new)
+		print "The Project "+args.new+" has been generated."
+	elif args.app and not args.view and not args.template and not args.urls:
+		check_folder()
+		generate_app(args.app)
+		print "The app "+args.app+" has been generated."
+	elif args.view and args.app:
+		check_folder()
+		generate_view(args.app,args.view)
+		print "The view has been generated for the app: " + args.app
+	elif args.template and args.app:
+		check_folder()
+		generate_template(args.app,args.template)
+		print "The template file has been generated for the app: " + args.app
+	elif args.urls and args.app:
+		check_folder()
+		generate_urls_py(args.app)
+		print "A urls.py file has been generated for the app: " + args.app
+	elif sys.argv[1]=="version" or "-v":	
+		print "Djgen Version: "+ app_version
 	else:
-		print "Incorrect command line arguements submitted."
+		print "An error occurred parsing command line arguements."
+		logging.debug("An error occurred parsing command line arguements.")
 except Exception as e:
-	print e
-	'''
-	print "Welcome to djgen."
-	print "Would you like to generate a new app?(Y/N)"
-	next_command = raw_input()
-	if next_command=='y':
-		print "Please enter the app name:"
-		app_name = raw_input()
-		generate_project(app_name)
-	elif next_command=='n':
-		print "thanks!"
-	else:
-		print "Incorrect input"'''
+	logging.debug('\n\n'+e)
